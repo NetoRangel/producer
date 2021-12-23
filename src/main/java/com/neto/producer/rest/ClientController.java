@@ -26,7 +26,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ClientController {
 
     private final ClientRepository repository;
-
     private final ClientModelAssembler assembler;
 
     ClientController(ClientRepository repository, ClientModelAssembler assembler) {
@@ -68,7 +67,7 @@ public class ClientController {
 
         Client updatedClient = repository.findById(id) //
                 .map(client -> {
-                    client.setIdClient(newClient.getIdClient());
+                    client.setIdClient(id);
                     client.setClientName(newClient.getClientName());
                     return repository.save(client);
                 }) //
@@ -87,9 +86,14 @@ public class ClientController {
     @DeleteMapping("/clients/{id}")
     public ResponseEntity<?> deleteClient(@PathVariable Long id) {
 
-        repository.deleteById(id);
-
-        return ResponseEntity.noContent().build();
+        if(repository.existsById(id)){
+            repository.deleteById(id);
+            return ResponseEntity.ok().body("Client " + id + " deleted successfully");
+        }
+        else {
+            return ResponseEntity //
+                    .status(500).body("Client " + id + " not found");
+        }
     }
 
 }

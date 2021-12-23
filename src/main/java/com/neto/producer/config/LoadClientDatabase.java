@@ -13,6 +13,7 @@ class LoadClientDatabase {
 
     private static final Logger log = LoggerFactory.getLogger(LoadClientDatabase.class);
 
+    //Populates Clients
     @Bean
     CommandLineRunner initClientDatabase(ClientRepository clientRepository) {
         return args -> {

@@ -21,7 +21,6 @@ class NotFoundAdvice {
     String ClientNotFoundHandler(ClientNotFoundException ex) {
         return ex.getMessage();
     }
-
     @ResponseBody
     @ExceptionHandler(ProductNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

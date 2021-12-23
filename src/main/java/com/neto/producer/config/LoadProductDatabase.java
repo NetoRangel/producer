@@ -13,6 +13,7 @@ class LoadProductDatabase {
 
     private static final Logger log = LoggerFactory.getLogger(LoadProductDatabase.class);
 
+    //Populates Products
     @Bean
     CommandLineRunner initProductDatabase(ProductRepository productRepository) {
         return args -> {
