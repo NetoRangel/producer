@@ -18,4 +18,5 @@ public class RequestModelAssembler implements RepresentationModelAssembler<Reque
                 linkTo(methodOn(RequestController.class).one(request.getIdRequest())).withSelfRel(),
                 linkTo(methodOn(RequestController.class).all()).withRel("requests"));
     }
+
 }

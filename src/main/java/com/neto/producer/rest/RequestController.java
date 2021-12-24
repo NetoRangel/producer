@@ -19,14 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Component
 @RestController
 public class RequestController {
 
@@ -72,7 +73,7 @@ public class RequestController {
 
         Float mathVariable = 0F;
         Request newRequest = new Request();
-        List<ProductList> productList = new ArrayList<ProductList>();
+        List<ProductList> productList = new ArrayList<>();
 
         //Save new ProductList
         Iterator<JsonNode> it = payload.get("productList").iterator();
@@ -90,10 +91,10 @@ public class RequestController {
                 productList.add(productListConverter);
 
                 //Sum of total request value
-                mathVariable = mathVariable + (payloadObject.get("quantity").longValue() * searchProduct.get(0).getProductValue().floatValue());
+                mathVariable = mathVariable + payloadObject.get("quantity").longValue() * searchProduct.get(0).getProductValue();
 
             }  else {
-                new ProductNotFoundException(payloadObject.get("productName").textValue());
+                throw new ProductNotFoundException(payloadObject.get("productName").textValue());
             }
         }
 
@@ -105,13 +106,13 @@ public class RequestController {
             newRequest.setRequestValue(mathVariable);
             newRequest.setDataPedido(new Date());
         } else {
-           new ClientNotFoundException(payload.get("clientName").textValue());
+           throw new ClientNotFoundException(payload.get("clientName").textValue());
         }
 
+        //Get new request ID
         Request savedRequest = repository.saveAndFlush(newRequest);
-        System.out.println(savedRequest);
 
-        //Save each ProductList under the Request
+        //Save each ProductList under the new Request ID
         Iterator<ProductList> itProduct = productList.iterator();
         while (itProduct.hasNext()) {
             ProductList productListClaimer = itProduct.next();
@@ -119,8 +120,10 @@ public class RequestController {
             productListRepository.save(productListClaimer);
         }
 
+        //Send to RabbitMQ
         template.convertAndSend(RequestQueueConfig.EXCHANGE,RequestQueueConfig.ROUTING_KEY, savedRequest);
 
+        //Returns
         return ResponseEntity //
                 .created(linkTo(methodOn(RequestController.class).one(newRequest.getIdRequest())).toUri()) //
                 .body(assembler.toModel(newRequest));

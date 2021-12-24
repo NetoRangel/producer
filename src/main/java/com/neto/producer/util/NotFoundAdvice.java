@@ -27,4 +27,5 @@ class NotFoundAdvice {
     String ProductNotFoundHandler(ProductNotFoundException ex) {
         return ex.getMessage();
     }
+
 }

@@ -2,15 +2,15 @@ package com.neto.producer.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.neto.producer.model.Client;
 import com.neto.producer.repository.ClientRepository;
 import com.neto.producer.util.ClientModelAssembler;
-import com.neto.producer.util.RequestNotFoundException;
+import com.neto.producer.util.ClientNotFoundException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Component
 @RestController
 public class ClientController {
 
@@ -47,7 +48,7 @@ public class ClientController {
     public EntityModel<Client> one(@PathVariable Long id) {
 
         Client client = repository.findById(id) //
-                .orElseThrow(() -> new RequestNotFoundException(id));
+                .orElseThrow(() -> new ClientNotFoundException(id));
 
         return assembler.toModel(client);
     }

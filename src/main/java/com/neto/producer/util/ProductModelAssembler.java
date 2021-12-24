@@ -18,4 +18,5 @@ public class ProductModelAssembler implements RepresentationModelAssembler<Produ
                 linkTo(methodOn(ProductController.class).one(product.getIdProduct())).withSelfRel(),
                 linkTo(methodOn(ProductController.class).all()).withRel("products"));
     }
+
 }
